@@ -1,35 +1,22 @@
-const jobs = require('./jobs')
-
 module.exports = function Manapotter(dispatch) {
 	
 	let cid = null,
-		model = 0,
-		job = -1,
 		cooldown = false,
-		enabled = true,
+		enabled,
 		battleground,
 		onmount,
 		incontract,
 		inbattleground,
 		alive,
-		justrezzed = false
+		inCombat
+		
+	// #############
+	// ### Magic ###
+	// #############
 	
 	dispatch.hook('S_LOGIN', 1, event => {
 		({cid} = event)
-		model = event.model
-		job = (model - 10101) % 100
-		
-		let jobName = getJob(job)
-		if((jobName == 'Slayer') || (jobName == 'Berserker')) enabled = false
-
-		if(!enabled) console.log('[Manapotter] You are currently playing as ' + jobName + '. Manapotter disabled.')
-	})
-	
-	dispatch.hook('C_REVIVE_NOW', 1, (event) => { // when accepting a rez
-		justrezzed = true
-		setTimeout(function () {
-			justrezzed = false
-		}, 30000)
+		enabled = true
 	})
 	
 	dispatch.hook('S_START_COOLTIME_ITEM', 1, event => { 
@@ -48,14 +35,14 @@ module.exports = function Manapotter(dispatch) {
 		currentMp = event.currentMp
 		maxMp = event.maxMp
 		
-		if(!justrezzed && !cooldown && event.target.equals(cid) && (currentMp <= maxMp/2)) {
+		if(!cooldown && event.target.equals(cid) && (currentMp <= maxMp/2)) {
 			useItem()
 		}
 	})
 	
 	function useItem() {
 		if (!enabled) return
-		if(alive && !onmount && !incontract && !inbattleground) {
+		if(alive && inCombat && !onmount && !incontract && !inbattleground) {
 			dispatch.toServer('C_USE_ITEM', 1, {
 				ownerId: cid,
 				item: 6562, // 6562: Prime Replenishment Potable, 184659: Everful Nostrum
@@ -91,12 +78,18 @@ module.exports = function Manapotter(dispatch) {
 	})
 	
 	dispatch.hook('S_SPAWN_ME', 1, event => { 
-		alive = event.alive 
-		justrezzed = true
-		setTimeout(function () {
-			justrezzed = false
-		}, 30000)
+		alive = event.alive
 	})
+	
+	dispatch.hook('S_USER_STATUS', 1, event => { 
+		if(event.target.equals(cid)) {
+			if(event.status == 1) {
+				inCombat = true
+			}
+			else inCombat = false
+		}
+	})
+	
 	dispatch.hook('S_CREATURE_LIFE', 1, event => {
 		if(event.target.equals(cid) && (alive != event.alive)) {
 			if(!alive) {
@@ -113,26 +106,6 @@ module.exports = function Manapotter(dispatch) {
 	dispatch.hook('S_ACCEPT_CONTRACT', 1, event => { incontract = false })
 	dispatch.hook('S_REJECT_CONTRACT', 1, event => { incontract = false })
 	dispatch.hook('S_CANCEL_CONTRACT', 1, event => { incontract = false })
-	
-	
-	// ########################
-	// ### Helper Functions ###
-	// ########################
-	
-	function get(obj, ...keys) {
-		if(obj === undefined) return
-
-		for(let key of keys)
-			if((obj = obj[key]) === undefined)
-				return
-
-		return obj
-	}
-	
-	function getJob(jobNumber) {
-		return get(jobs, job, "name") || "Undefined"
-	}
-	
 	
 	// #################
 	// ### Chat Hook ###

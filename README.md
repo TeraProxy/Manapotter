@@ -1,7 +1,6 @@
 # Manapotter  
 A tera-proxy module that automatically uses a Prime Replenishment Potable when below 50% MP.  
-Waits 30 seconds after reviving before the check starts again.  
-Upon login, if you are a Slayer or Berserker, the script is disabled by default. For any other class it is enabled by default.  
+Only uses items when you are alive and in combat.  
   
 ## Usage  
 While in game, open a whisper chat session with "!Manapotter" by typing "/w !manapotter" in chat and hitting the space bar.
