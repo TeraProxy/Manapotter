@@ -1,6 +1,7 @@
 module.exports = function Manapotter(dispatch) {
 	
 	let cid = null,
+		player = '',
 		cooldown = false,
 		enabled,
 		battleground,
@@ -16,6 +17,7 @@ module.exports = function Manapotter(dispatch) {
 	
 	dispatch.hook('S_LOGIN', 1, event => {
 		({cid} = event)
+		player = event.name
 		enabled = true
 	})
 	
@@ -115,13 +117,14 @@ module.exports = function Manapotter(dispatch) {
 		if(event.target.toUpperCase() === "!manapotter".toUpperCase()) {
 			if (/^<FONT>on?<\/FONT>$/i.test(event.message)) {
 				enabled = true
-				message('Manapotter <font color="#00EE00">enabled</font>.')
+				message('Manapotter <font color="#56B4E9">enabled</font>.')
 			}
 			else if (/^<FONT>off?<\/FONT>$/i.test(event.message)) {
 				enabled = false
-				message('Manapotter <font color="#DC143C">disabled</font>.')
+				message('Manapotter <font color="#E69F00">disabled</font>.')
 			}
-			else message('Commands: "on" (enable Manapotter),'
+			else message('Commands:<br>'
+								+ ' "on" (enable Manapotter),<br>'
 								+ ' "off" (disable Manapotter)'
 						)
 			return false
@@ -139,4 +142,20 @@ module.exports = function Manapotter(dispatch) {
 			message: msg
 		})
 	}
+	
+	dispatch.hook('C_CHAT', 1, event => {
+		if(/^<FONT>!mpots<\/FONT>$/i.test(event.message)) {
+			if(!enabled) {
+				enabled = true
+				message('Manapotter <font color="#56B4E9">enabled</font>.')
+				console.log('Manapotter enabled.')
+			}
+			else {
+				enabled = false
+				message('Manapotter <font color="#E69F00">disabled</font>.')
+				console.log('Manapotter disabled.')
+			}
+			return false
+		}
+	})
 }

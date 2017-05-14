@@ -10,7 +10,10 @@ The following commands are supported:
 * on - Enables the script  
 * off - Disables the script  
   
-Any other input returns a summary of above commands in the game.
+Any other input returns a summary of above commands in the game.  
+  
+Alternative commands in all other chats:  
+* !mpots - Toggles between "on" and "off" state  
   
 ## Safety
 Whatever you send to "!Manapotter" in game is intercepted client-side. The chat is NOT sent to the server.
