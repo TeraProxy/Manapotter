@@ -1,3 +1,6 @@
+## :heavy_exclamation_mark: Discontinued :heavy_exclamation_mark:
+Support for this module has been discontinued.  
+
 # Manapotter  
 A tera-proxy module that automatically uses a Prime Replenishment Potable when below 50% MP.  
 Only uses items when you are alive and in combat.  
